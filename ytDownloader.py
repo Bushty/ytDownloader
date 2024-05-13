@@ -2,11 +2,6 @@ from pytube import YouTube
 from pytube import Playlist
 from sys import argv
 
-# get link via argument 
-# TODO: check if argument is empty: print error message "a link to video/playlist needs to be provided"
-link = argv[1]
-
-
 # TODO: check if provided link actually links to a YT playlist or video
 def validateLink(link):
     if(1):
@@ -36,3 +31,8 @@ def downloadPlaylist(playlistLink):
         downloadVideo(videoURL)
         videoCounter+=1
         print("Progress: ", videoCounter, "/", plLength, " Videos")
+
+# get link via argument 
+# TODO: check if argument is empty: print error message "a link to video/playlist needs to be provided"
+link = argv[1]
+downloadVideo(link)
