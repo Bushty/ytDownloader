@@ -29,12 +29,13 @@ def validateLink(link):
     return False
 
 # TODO: check automatically if link provided is a playlist or a video and proceed accordingly
-def detectVideoOrPlaylist(link):
-    print("Hello World")
+def isPlaylist(link):
+    if link.startswith("https://www.youtube.com/playlist?list="):
+        return True
+    return False
 
 # download single video
 def downloadVideo(videoLink, playlistFolder=None):
-    print("test2")
     downloadPath = getDownloadPath()
     if playlistFolder is not None:
         downloadPath = os.path.join(downloadPath, playlistFolder)
@@ -48,18 +49,13 @@ def downloadVideo(videoLink, playlistFolder=None):
 
 # download all videos in a playlist
 def downloadPlaylist(playlistLink):
-    print("Playlist")
     playlist = Playlist(playlistLink)
     plTitle = playlist.title
     plLength = playlist.length
     print("Downloading Playlist: ", plTitle)
     print(f"Playlist contains of {plLength} videos")
-    #TODO: depending on OS create folder named after plTitle (if doesnt exist already)
-    
     videoCounter = 0
-    print("test")
     for videourl in playlist.video_urls[:3]:
-        print("videourl")
         downloadVideo(videourl, plTitle)
         videoCounter+=1
         print("Progress: ", videoCounter, "/", plLength, " Videos")
@@ -68,4 +64,9 @@ def downloadPlaylist(playlistLink):
 # get link via argument 
 # TODO: check if argument is empty: print error message "a link to video/playlist needs to be provided"
 link = argv[1]
-downloadPlaylist(link)
+if isPlaylist(link):
+    downloadPlaylist(link)
+    print("Playlist Download successfull")
+else:
+    downloadVideo(link)
+    print("Video Download successfull")
