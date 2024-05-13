@@ -3,13 +3,13 @@ from pytube import Playlist
 from sys import argv
 import os
 
-# check which OS the script is being run on
+# checks which OS the script is being run on (currently obsolete)
 def isWindows():
     if os.name == "nt":
         return True
     return False
 
-# depending on OS select Downloadpath
+# return Downloadpath depending on OS 
 def getDownloadPath():
     homePath = os.path.expanduser("~")
     desktopPath = os.path.join(homePath, "Desktop")
@@ -19,12 +19,9 @@ def getDownloadPath():
         print(f"Folder #{downloadFolderPath} created successfully")
     return downloadFolderPath
 
-def makePlaylistFolder(playlistName):
-    print("testFolder");
-
-# TODO: check if provided link actually links to a YT playlist or video
-def validateLink(link):
-    if(1):
+# checks if provided link actually links to a YT playlist or video
+def validYTLink(link):
+    if link.startswith("https://www.youtube.com/") | link.startswith("https://youtu.be/"):
         return True
     return False
 
@@ -34,7 +31,7 @@ def isPlaylist(link):
         return True
     return False
 
-# download single video
+# downloads single video
 def downloadVideo(videoLink, playlistFolder=None):
     downloadPath = getDownloadPath()
     if playlistFolder is not None:
@@ -43,30 +40,61 @@ def downloadVideo(videoLink, playlistFolder=None):
             os.makedirs(downloadPath)
             print(f"Folder #{downloadPath} created successfully")
     video = YouTube(videoLink)
-    print("Downloading Video: ", video.title)
+    print("Downloading Video: ", video.title, " by ", video.author)
     downloader = video.streams.get_highest_resolution()
     downloader.download(downloadPath)
 
-# download all videos in a playlist
+# downloads all videos in a playlist
 def downloadPlaylist(playlistLink):
     playlist = Playlist(playlistLink)
     plTitle = playlist.title
     plLength = playlist.length
-    print("Downloading Playlist: ", plTitle)
-    print(f"Playlist contains of {plLength} videos")
+    plOwner = playlist.owner
+    print()
+    print("Downloading Playlist: ", plTitle, " by ", plOwner, " (",plLength, "videos )")
+    print()
     videoCounter = 0
-    for videourl in playlist.video_urls[:3]:
+    for videourl in playlist.video_urls:
         downloadVideo(videourl, plTitle)
         videoCounter+=1
         print("Progress: ", videoCounter, "/", plLength, " Videos")
+        print()
 
 
-# get link via argument 
-# TODO: check if argument is empty: print error message "a link to video/playlist needs to be provided"
-link = argv[1]
-if isPlaylist(link):
-    downloadPlaylist(link)
-    print("Playlist Download successfull")
-else:
-    downloadVideo(link)
-    print("Video Download successfull")
+
+## Script Start ##
+print()
+print("Please provide a valid Youtube Link for downloading")
+print("This tool can download single videos or playlists (playlist has to be public)")
+
+# Repeated User Input prompt till valid Link is entered
+inputValid = False
+ytLink = ""
+while not inputValid:
+    user_input = input("Enter Youtube Link: ")
+    if user_input == "":
+        print()
+        print("Exiting Tool")
+        print()
+        break
+    elif validYTLink(user_input):
+        ytLink = user_input
+        inputValid = True
+        break
+    else:
+        print("Entered Link is not a valid URL.")
+        print("Please enter a valid Link or Press Enter to exit")
+        print()
+
+# depending if video / playlist calls appropiate download function
+if inputValid:
+    if isPlaylist(ytLink):
+        downloadPlaylist(ytLink)
+        print()
+        print("Playlist Download finished")
+        print()
+    else:
+        downloadVideo(ytLink)
+        print()
+        print("Video Download finished")
+        print()
