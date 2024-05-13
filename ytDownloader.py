@@ -30,5 +30,9 @@ def downloadPlaylist(playlistLink):
     plTitle = playlist.title
     print("Downloading Playlist: ", plTitle)
     #TODO: depending on OS create folder named after plTitle (if doesnt exist already)
+    plLength = playlist.length-1
+    videoCounter = 0
     for videoURL in playlist.video_urls:
-        downloadVideo()
+        downloadVideo(videoURL)
+        videoCounter+=1
+        print("Progress: ", videoCounter, "/", plLength, " Videos")
